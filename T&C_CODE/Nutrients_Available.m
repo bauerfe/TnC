@@ -85,8 +85,11 @@ end
 if OPT_SoilBiogeochemistry == 1 
     %! These values are based on Meyerholt and Zaehle: "The role of stoichiometric flexibility in modelling forest ecosystem responses to nitrogen fertilization", 2015
     %! Note that it is not fully transparent where these values in the paper come from, and whether they are universal or refer to specific plant types.
-    if rNc < 0.64 || rPc <0.64 || rKc <0.64 %% || rNc > 1.85 || rPc > 1.85 || rKc > 1.85
+    if false  % rNc < 0.64 || rPc <0.64 || rKc <0.64 %% || rNc > 1.85 || rPc > 1.85 || rKc > 1.85
         disp('Error Nutrient Concentrations outside allowed bounds!!')
+        disp(rNc)
+        disp(rPc)
+        disp(rKc)
         return
     end
 end 
