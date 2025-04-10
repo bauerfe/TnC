@@ -1,7 +1,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   Subfunction  CROP HARVESTING or PLANTING   %%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function[B,RB,LAI,LAIdead,ManI,PHE_S,dflo,AgeL,AgeDL]= Crop_Planting_Harvest(B,RBtm1,dtd,LAI,LAIdead,PHE_S,dflo,AgeL,AgeDL,Datam,Mpar)
+function[B,Nreserve,Preserve,Kreserve,RB,LAI,LAIdead,ManI,PHE_S,dflo,AgeL,AgeDL] ...
+    = Crop_Planting_Harvest(B,Nreserve,Preserve,Kreserve,RBtm1,dtd,LAI,LAIdead,PHE_S,dflo,AgeL,AgeDL,Datam,Mpar)
 %%%%%%
 DD = datenum(Datam(1),Datam(2),Datam(3),Datam(4),0,0);
 Date_sowing=Mpar.Date_sowing+10; %%% Emergence as Date of sowing + 10 days  
@@ -21,6 +22,9 @@ if  sum(abs(DD-Date_sowing)<=0.49)>=1  %! At least one sowing date is at most 0.
     %%%%
     B(B<0)=0;
     %%%%
+    Nreserve = Mpar.NPK_res_ini(1);
+    Preserve = Mpar.NPK_res_ini(2);
+    Kreserve = Mpar.NPK_res_ini(3);
 end
 %%%%%%%%%% Harvesting
 if  sum(abs(DD-Date_harvesting)<=0.49)>=1

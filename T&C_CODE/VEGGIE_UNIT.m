@@ -195,7 +195,8 @@ end
 [B,RB,LAI,LAIdead,ManI]= Forest_Logging_Fire(B,RB,dtd,Sl,mSl,aSE,LAI,LAIdead,Datam,Mpar);
 %%%%% Crop Management 
 if (aSE==5)
-    [B,RB,LAI,LAIdead,ManI,PHE_S,dflo,AgeL,AgeDL]= Crop_Planting_Harvest(B,RB,dtd,LAI,LAIdead,PHE_S,dflo,AgeL,AgeDL,Datam,Mpar);
+    [B,Nreserve,Preserve,Kreserve,RB,LAI,LAIdead,ManI,PHE_S,dflo,AgeL,AgeDL] ...
+    = Crop_Planting_Harvest(B,Nreserve,Preserve,Kreserve,RB,dtd,LAI,LAIdead,PHE_S,dflo,AgeL,AgeDL,Datam,Mpar);
 end
 %%%%%
 %%%%%%%%% LAI Below Minimum
