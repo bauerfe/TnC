@@ -5,23 +5,31 @@
 current_directory = cd;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%
-NN=8760;% 276096;% %%% time Step
+% NN=105192;% 276096;% %%% time Step (hours)
+OPT_BG = 0;
 %%%%%%%%% Time step 
 dt=3600; %%[s] %%% 
 dth=1; %%[h]
 %%%%%%%%%%%%
-ms=16; %%% Soil Layer 
+ms=9; %16; %%% Soil Layer 
 cc = 1; %% Crown area
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% METEO INPUT
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-id_location = 'ZURICH_SMA';
-load('..\data\Inputs\Data_Run_Zurich_Fluntern.mat')
-Date=D; clear D 
+id_location = 'Rothamsted';
+% load('..\data\Inputs\Meteo_Rothamsted_spinup.mat')
+load([".." filesep "data" filesep "Inputs" filesep "Meteo_Rothamsted_spinup.mat"]);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%
-x1=1;
-x2=8760;% 276096;
+% x1=1;
+% x2=105192;% 276096;
+dateNum1 = datenum(2009, 1, 1, 0, 0, 0);
+dateNum2 = datenum(2013, 12, 31, 23, 0, 0);
+index1 = find(Date >= dateNum1, 1, 'first');
+index2 = find(Date >= dateNum2, 1, 'first');
+x1=index1;
+x2= index2;
+NN=x2-x1+1;% %%% time Step
 %%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%5
 Date=Date(x1:x2);
@@ -33,12 +41,13 @@ SAB2=SAB2(x1:x2); N=N(x1:x2); Tdew=Tdew(x1:x2);esat=esat(x1:x2);
 PARB=PARB(x1:x2); PARD = PARD(x1:x2);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%
-t_bef= -0.67; t_aft= 1.67;
+t_bef= -0.67; t_aft= 1.67; % How to get this?
 %%%%%%%%%%%%%%%%%%%%
 Ds=esat-ea; %% [Pa] Vapor Pressure Deficit
 Ds(Ds<0)=0;
 %%%%%%%%%%%%%%%%%%%%%%%%%
 load('..\data\Inputs\Ca_Data.mat');
+load([ ".." filesep "data" filesep "Inputs" filesep "Ca_Data.mat"])
 d1 = find(abs(Date_CO2-Date(1))<1/36);d2 = find(abs(Date_CO2-Date(end))<1/36);
 Ca=Ca(d1:d2); 
 clear d1 d2 Date_CO2 
@@ -61,6 +70,8 @@ MAIN_FRAME ;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 cd(current_directory);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-file_to_save = strcat('results\Ris_',id_location,'.mat');
-save(file_to_save);
+file_to_save = strcat('..\results\Intermediate-spinup_',id_location,'.mat');
+% save(file_to_save);
+B_end = P(end, :);
+% save("..\results\Rothamsted_biogeo_spinup-B_end-curr.mat", "B_end");
 %%%%%%%%%%%%%%%%%%%%%%%%
