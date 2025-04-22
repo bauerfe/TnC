@@ -1,8 +1,8 @@
 %! The actual spinup
 function [B, R_litter, R_litter_sur, R_microbe, R_bacteria, R_ew, VOL, BfixN, Min_N, Min_P, RmycAM, RmycEM, ...
     N2flx, NH4_Uptake, NO3_Uptake, P_Uptake, K_Uptake, LEAK_NH4, LEAK_NO3, LEAK_P, LEAK_K, LEAK_DOC, ...
-    LEAK_DON, LEAK_DOP, Lk] = biogeochemistry_spinup(Lat, Lon, Nyears, ISOIL, Zbio, rsd, ...
-    Pcla, Psan, PH, Zs, Ts, Ta, Psi_s, Se, Se_fc, V, VT, T_L, T_H, Lk, RexmyI, Ccrown, B)
+    LEAK_DON, LEAK_DOP, Lk] = biogeochemistry_spinup(Lat, Lon, N_epochs, Nyears_epoch, ISOIL, Zbio, rsd, ...
+    Pcla, Psan, PH, Zs, Ts, Ta, Psi_s, Se, Se_fc, V, VT, T_L, T_H, Lk, RexmyI, Ccrown, B, rtol, save_path)
     
     ZBIOG = 0.001 * Zbio; %%[m] %! Biogeochemically active layer depth in m?
     rsd = mean(rsd); %% density dry soil [kg/m^3]
@@ -15,7 +15,8 @@ function [B, R_litter, R_litter_sur, R_microbe, R_bacteria, R_ew, VOL, BfixN, Mi
     Broot = mean(B(:, 1, 3));
 
     IS = squeeze(mean(ISOIL, 1));
-    
+
+    %! These initial conditions are taken from another file and are assumed to be arbitrary
     %%%%%%% CARBON POOL %%%%%%%%%%%
     Btm1(1)=121; %%% B1 Above-ground Litter Metabolic
     Btm1(2)=315; %%% B2 Above-ground Litter Structural - Cellulose/Hemicellulose
@@ -106,70 +107,87 @@ function [B, R_litter, R_litter_sur, R_microbe, R_bacteria, R_ew, VOL, BfixN, Mi
     
     IMAN=zeros(6,1);
     
-    t=1:365*Nyears;
-    B=zeros(length(t),55);
-    R_litter=zeros(length(t),1);
-    R_litter_sur=zeros(length(t),1);
-    R_microbe=zeros(length(t),1);
-    R_ew=zeros(length(t),1);
-    VOL=zeros(length(t),1);
-    BfixN = zeros(length(t),1);
-    Min_N = zeros(length(t),1);
-    Min_P = zeros(length(t),1);
-    R_bacteria= zeros(length(t),1);
-    RmycAM = zeros(length(t),1);
-    RmycEM = zeros(length(t),1);
-    N2flx = zeros(length(t),1);
-    NH4_Uptake=zeros(length(t),1);
-    NO3_Uptake = zeros(length(t),1);
-    P_Uptake=zeros(length(t),1);
-    K_Uptake = zeros(length(t),1);
-    LEAK_NH4 = zeros(length(t),1);
-    LEAK_NO3 = zeros(length(t),1);
-    LEAK_P = zeros(length(t),1);
-    LEAK_K = zeros(length(t),1);
-    LEAK_DOC = zeros(length(t),1);
-    LEAK_DON = zeros(length(t),1);
-    LEAK_DOP = zeros(length(t),1);
+    Ndays_epoch = 365 * Nyears_epoch;
+    t=1:Ndays_epoch;
+
+    %! We don't need to reset these values between epochs, as the values in each interation are independent of previous values
+    B=zeros(Ndays_epoch,55);
+    R_litter=zeros(Ndays_epoch,1);
+    R_litter_sur=zeros(Ndays_epoch,1);
+    R_microbe=zeros(Ndays_epoch,1);
+    R_ew=zeros(Ndays_epoch,1);
+    VOL=zeros(Ndays_epoch,1);
+    BfixN = zeros(Ndays_epoch,1);
+    Min_N = zeros(Ndays_epoch,1);
+    Min_P = zeros(Ndays_epoch,1);
+    R_bacteria= zeros(Ndays_epoch,1);
+    RmycAM = zeros(Ndays_epoch,1);
+    RmycEM = zeros(Ndays_epoch,1);
+    N2flx = zeros(Ndays_epoch,1);
+    NH4_Uptake=zeros(Ndays_epoch,1);
+    NO3_Uptake = zeros(Ndays_epoch,1);
+    P_Uptake=zeros(Ndays_epoch,1);
+    K_Uptake = zeros(Ndays_epoch,1);
+    LEAK_NH4 = zeros(Ndays_epoch,1);
+    LEAK_NO3 = zeros(Ndays_epoch,1);
+    LEAK_P = zeros(Ndays_epoch,1);
+    LEAK_K = zeros(Ndays_epoch,1);
+    LEAK_DOC = zeros(Ndays_epoch,1);
+    LEAK_DON = zeros(Ndays_epoch,1);
+    LEAK_DOP = zeros(Ndays_epoch,1);
     
-    
-    
-    for j=1:length(t);
-        %%%%%%%%%
-    
+    for nn=1:N_epochs
+        for j=1:Ndays_epoch
+            %%%%%%%%%
+            [LEAK_NH4(j),LEAK_NO3(j),LEAK_P(j),LEAK_K(j),LEAK_DOC(j),LEAK_DON(j),LEAK_DOP(j)]= Biogeo_Leakage(Btm1,Lk,V,BiogeoPar);
+            %%%%
+            [NH4_Uptake(j),NO3_Uptake(j),P_Uptake(j),K_Uptake(j)]= Biogeo_uptake(Btm1,Broot,Ts,T,VT,Ccrown,ExEM,BiogeoPar);
+            %NH4_Uptake(j)=0; NO3_Uptake(j)=0; P_Uptake(j)=0; K_Uptake(j)=0;
+            %%%%
+            [BfixN(j)]= Biogeo_Bio_fixation(0,0,Btm1,RexmyI,Ts);
+            %
+            %%%
+            [dB,R_litter(j),R_microbe(j),R_litter_sur(j),R_ew(j),VOL(j),N2flx(j),Min_N(j),Min_P(j),R_bacteria(j),RmycAM(j),RmycEM(j)]= BIOGEOCHEMISTRY_DYNAMIC3(t(j),Btm1,ZBIOG,rsd,IS,Ts,Ta,Psi_s,PH,Se,Se_fc,FertN,DepN,BfixN(j),FertP,DepP,FertK,DepK,...
+                NH4_Uptake(j),NO3_Uptake(j),P_Uptake(j),K_Uptake(j),LEAK_DOC(j),LEAK_NH4(j),LEAK_NO3(j),LEAK_P(j),LEAK_K(j),LEAK_DON(j),LEAK_DOP(j),Tup_P,Tup_K,ExEM,Pcla,Psan,BiogeoPar,SC_par,IMAN,opt_cons_CUE); 
         
-        [LEAK_NH4(j),LEAK_NO3(j),LEAK_P(j),LEAK_K(j),LEAK_DOC(j),LEAK_DON(j),LEAK_DOP(j)]= Biogeo_Leakage(Btm1,Lk,V,BiogeoPar);
-        %%%%
-        [NH4_Uptake(j),NO3_Uptake(j),P_Uptake(j),K_Uptake(j)]= Biogeo_uptake(Btm1,Broot,Ts,T,VT,Ccrown,ExEM,BiogeoPar);
-        %NH4_Uptake(j)=0; NO3_Uptake(j)=0; P_Uptake(j)=0; K_Uptake(j)=0;
-        %%%%
-        [BfixN(j)]= Biogeo_Bio_fixation(0,0,Btm1,RexmyI,Ts);
-        %
-        %%%
-        [dB,R_litter(j),R_microbe(j),R_litter_sur(j),R_ew(j),VOL(j),N2flx(j),Min_N(j),Min_P(j),R_bacteria(j),RmycAM(j),RmycEM(j)]= BIOGEOCHEMISTRY_DYNAMIC3(t(j),Btm1,ZBIOG,rsd,IS,Ts,Ta,Psi_s,PH,Se,Se_fc,FertN,DepN,BfixN(j),FertP,DepP,FertK,DepK,...
-            NH4_Uptake(j),NO3_Uptake(j),P_Uptake(j),K_Uptake(j),LEAK_DOC(j),LEAK_NH4(j),LEAK_NO3(j),LEAK_P(j),LEAK_K(j),LEAK_DON(j),LEAK_DOP(j),Tup_P,Tup_K,ExEM,Pcla,Psan,BiogeoPar,SC_par,IMAN,opt_cons_CUE); 
-    
-        %%%%
-        if isreal(sum(dB))==0 || isnan(sum(dB)) == 1
+            %%%%
+            if isreal(sum(dB))==0 || isnan(sum(dB)) == 1
+                disp(['Stopping in epoch ' nn ', day ' jj ' because of some break condition related to variable `dB`'])
+                break
+            end
+            %%%
+            %%%%
+            B(j,:)=Btm1+dB;
+            Btm1=B(j,:);
+            %%%
+        end 
+
+        if ~strcmp(save_path, 'None')
+            save([save_path '_' sprintf('%04d', nn) '.mat']);
+        end
+
+        % Compare how many values of B have changed by a certain relative amount during the epoch
+        B(B<1e-10) = 1e-10;
+        rel_diff_B = abs((B(end,:) - B(1, :)) ./ B(end, :));
+        n_ss = sum(rel_diff_B < rtol);
+        if n_ss == 55
+            disp("Spin-up complete")
             break
         end
-        %%%
-        %%%%
-        B(j,:)=Btm1+dB;
-        Btm1=B(j,:);
-        %%%
-    
+
+        disp([ 'Spin-up epoch ' nn ': ' n_ss ' of 55 elements in steady state.'])
+        
     end
     
     
     
     
     %%%%%%%% SOIL BIOGEOCHEMISTRY BALANCE CHECK
-    IS=IS*length(t);
+    IS=IS*Ndays_epoch;
     C_exp = sum(IS(1:9));
-    N_exp = sum(IS(10:12)) + DepN*length(t) + FertN*length(t);
-    P_exp = sum(IS(13:15)) + DepP*length(t) + Tup_P*length(t) + FertP*length(t) ;
-    K_exp = sum(IS(16:18)) + DepK*length(t) + Tup_K*length(t) + FertK*length(t) ;
+    N_exp = sum(IS(10:12)) + DepN*Ndays_epoch + FertN*Ndays_epoch;
+    P_exp = sum(IS(13:15)) + DepP*Ndays_epoch + Tup_P*Ndays_epoch + FertP*Ndays_epoch ;
+    K_exp = sum(IS(16:18)) + DepK*Ndays_epoch + Tup_K*Ndays_epoch + FertK*Ndays_epoch ;
     dP_soil = B(1,:) - B(end,:);
     C_out = sum(LEAK_DOC)+sum(R_litter)+sum(R_microbe)+sum(R_ew);
     N_out = sum(sum(NH4_Uptake +NO3_Uptake)) + sum(LEAK_NH4) + sum(LEAK_NO3) + sum(LEAK_DON) + sum(VOL) +sum(N2flx);
