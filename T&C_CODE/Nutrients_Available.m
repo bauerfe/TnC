@@ -82,7 +82,7 @@ end
 if sum(B) == 0
     rNc=1; rPc=1; rKc=1; 
 end 
-if OPT_SoilBiogeochemistry == 1 
+if (OPT_SoilBiogeochemistry == 1) & (OPT_IgnoreNutrientConcentrationBounds == 0)
     %! These values are based on Meyerholt and Zaehle: "The role of stoichiometric flexibility in modelling forest ecosystem responses to nitrogen fertilization", 2015
     %! Note that it is not fully transparent where these values in the paper come from, and whether they are universal or refer to specific plant types.
     if false  % rNc < 0.64 || rPc <0.64 || rKc <0.64 %% || rNc > 1.85 || rPc > 1.85 || rKc > 1.85
