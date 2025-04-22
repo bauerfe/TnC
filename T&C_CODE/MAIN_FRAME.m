@@ -281,6 +281,10 @@ else
     end
     Wlevm1 = Rd(1)+Rh(1);
 end
+if not(exist('OPT_IgnoreNutrientConcentrationBounds'))
+    %! If 1, ignore bounds on nutrient reserves `rNc`, `rPc`, `rKc` in `Nutrients_Available`
+    OPT_IgnoreNutrientConcentrationBounds = 0;
+end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 for i=2:NN
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
