@@ -22,9 +22,11 @@ if  sum(abs(DD-Date_sowing)<=0.49)>=1  %! At least one sowing date is at most 0.
     %%%%
     B(B<0)=0;
     %%%%
-    Nreserve = Mpar.NPK_res_ini(1);
-    Preserve = Mpar.NPK_res_ini(2);
-    Kreserve = Mpar.NPK_res_ini(3);
+    if length(Mpar.NPK_res_ini) == 3 %! Only change `Xreserve` to fixed value if defined
+        Nreserve = Mpar.NPK_res_ini(1);
+        Preserve = Mpar.NPK_res_ini(2);
+        Kreserve = Mpar.NPK_res_ini(3);
+    end
 end
 %%%%%%%%%% Harvesting
 if  sum(abs(DD-Date_harvesting)<=0.49)>=1
