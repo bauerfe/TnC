@@ -175,7 +175,7 @@ function [B, R_litter, R_litter_sur, R_microbe, R_bacteria, R_ew, VOL, BfixN, Mi
             break
         end
 
-        disp([ 'Spin-up epoch ' nn ': ' n_ss ' of 55 elements in steady state.'])
+        disp([ 'Spin-up epoch ' num2str(nn) ': ' num2str(n_ss) ' of 55 elements in steady state.'])
         
     end
     

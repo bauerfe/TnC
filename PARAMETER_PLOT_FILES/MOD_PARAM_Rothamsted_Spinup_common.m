@@ -310,7 +310,7 @@ fbe_L = 0.0; %% fraction below-ground sapwood and reserve % From Buckley et al.,
 %SOWING AND HARVEST SECTION
 %%%%%%%%%%%%%%%% Sowing and harvesting data
 relevant_section = 1;  %! Section 1: Continuous wheat
-relevant_strip = 3;  %! Strip 3: No fertilizer
+relevant_strip = 21;  %! Strip 3: No fertilizer, 21 (=2.1): Most fertilizer (FYM + N), highest yield
 crop_data = readtable(['..' filesep 'data' filesep 'Rothamsted_yield_data.csv']);
 crop_data = crop_data((crop_data.section == relevant_section) & (crop_data.strip == relevant_strip), :);
 
@@ -327,7 +327,7 @@ Mpar_L(1).fract_left = 0;
 Mpar_L(1).fract_left_fr = 0;
 Mpar_L(1).fract_left_AB = 0;
 Mpar_L(1).fract_left_BG = 1; % only leave the roots
-Mpar_L(1).NPK_res_ini = [5 5 5];
+Mpar_L(1).NPK_res_ini = [35 5 15];  % [0 0 0]; In initial spinup provide enough that NPP is not limited by nutrient reserve
 
 %%%%%%%%%%%%%
 Vmax_H = [0]; %55
@@ -377,9 +377,9 @@ Preserve_H(1,:)= [0]; % From Buckley et al., 2024
 Kreserve_H(1,:)= [0]; % From Buckley et al., 2024 
 FNC_H(1,:)=1;
 NupI_H(1,:,:)= [0 0 0];
-Nreserve_L(1,:)= [1000];
-Preserve_L(1,:)= [100]; % From Buckley et al., 2024 
-Kreserve_L(1,:)= [1000];
+Nreserve_L(1,:)= [0];
+Preserve_L(1,:)= [0]; 
+Kreserve_L(1,:)= [0];
 FNC_L(1,:)=1;
 NupI_L(1,:,:)= [0 0 0];
 RexmyI(1,:)= [0 0 0];
