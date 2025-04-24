@@ -163,7 +163,7 @@ function [B, R_litter, R_litter_sur, R_microbe, R_bacteria, R_ew, VOL, BfixN, Mi
         end 
 
         if ~strcmp(save_path, 'None')
-            save([save_path '_' sprintf('%04d', nn) '.mat']);
+            save([save_path filesep sprintf('%04d', nn) '.mat']);
         end
 
         % Compare how many values of B have changed by a certain relative amount during the epoch
