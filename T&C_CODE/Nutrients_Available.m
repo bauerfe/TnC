@@ -2,7 +2,7 @@
 %   Subfunction NUTRIENT AVAILABILITY  %%%%%%
 %! See TR 17.3.5 "Plant soichiometric constraints and flexibility" for explanations what is going on here
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function[FNC,e_relN,rNc,rPc,rKc,rMc,rNcR,Navail,Pavail,Kavail]= Nutrients_Available(B,FNCtm1,St,Nreserve,Preserve,Kreserve,OPT_SoilBiogeochemistry)  
+function[FNC,e_relN,rNc,rPc,rKc,rMc,rNcR,Navail,Pavail,Kavail]= Nutrients_Available(B,FNCtm1,St,Nreserve,Preserve,Kreserve,OPT_SoilBiogeochemistry, OPT_IgnoreNutrientConcentrationBounds)  
 %%%%%%%%%
 %%%%-> All computations are for /m2 PFT not ground 
 %%%% INPUT
