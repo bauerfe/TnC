@@ -2,7 +2,7 @@
 %   Subfunction NUTRIENT AVAILABILITY  %%%%%%
 %! See TR 17.3.5 "Plant soichiometric constraints and flexibility" for explanations what is going on here
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function[FNC,e_relN,rNc,rPc,rKc,rMc,rNcR,Navail,Pavail,Kavail]= Nutrients_Available(B,FNCtm1,St,Nreserve,Preserve,Kreserve,OPT_SoilBiogeochemistry)  
+function[FNC,e_relN,rNc,rPc,rKc,rMc,rNcR,Navail,Pavail,Kavail]= Nutrients_Available(B,FNCtm1,St,Nreserve,Preserve,Kreserve,OPT_SoilBiogeochemistry, OPT_IgnoreNutrientConcentrationBounds)  
 %%%%%%%%%
 %%%%-> All computations are for /m2 PFT not ground 
 %%%% INPUT
@@ -85,7 +85,7 @@ end
 if (OPT_SoilBiogeochemistry == 1) & (OPT_IgnoreNutrientConcentrationBounds == 0)
     %! These values are based on Meyerholt and Zaehle: "The role of stoichiometric flexibility in modelling forest ecosystem responses to nitrogen fertilization", 2015
     %! Note that it is not fully transparent where these values in the paper come from, and whether they are universal or refer to specific plant types.
-    if false  % rNc < 0.64 || rPc <0.64 || rKc <0.64 %% || rNc > 1.85 || rPc > 1.85 || rKc > 1.85
+    if rNc < 0.64 || rPc <0.64 || rKc <0.64 %% || rNc > 1.85 || rPc > 1.85 || rKc > 1.85
         disp('Error Nutrient Concentrations outside allowed bounds!!')
         disp(rNc)
         disp(rPc)
