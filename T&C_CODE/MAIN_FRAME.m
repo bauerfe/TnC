@@ -318,7 +318,9 @@ for i=2:NN
                 Ccrown,Bio_Zs,RfH_Zs,RfL_Zs,sum(Lk(pdind)),sum(Rd(pdind)),sum(Rh(pdind)),sum(Pr(pdind)),sum(T_H(pdind,:),1),sum(T_L(pdind,:),1),B_H(j-1,:,3),B_L(j-1,:,3),LAI_H(j-1,:),LAI_L(j-1,:),...
                 SupN_H(j-1,:),SupP_H(j-1,:),SupK_H(j-1,:),SupN_L(j-1,:),SupP_L(j-1,:),SupK_L(j-1,:),...
                 REXMY,RexmyI(j-1,:),ExEM,NavlI(j-1,:),Pcla,Psan,...
-                B_IO,jDay(j),FireA,0);
+                B_IO,j,FireA,0);
+                % B_IO,datetime(Datam(i,1:3)),FireA,0);
+                % B_IO,jDay(j),FireA,0);
             %%%%%
             %%%%%
             BLit(j,:)= 0.002*sum(P(j,1:5))*Ccrown; %% %%[kg DM / m2]
