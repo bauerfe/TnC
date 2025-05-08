@@ -15,8 +15,8 @@ function[dB]= VEGETATION_DYNAMIC(t,B,Tam,Tsm,An,Rdark,Bfac,Bfac_alloc,FNC,Se_bio
 %Preserve  = Actually this is Phosporus Available [gN/m^2]
 %Kreserve  = Actually this is Potassium Available [gN/m^2]
 %%%%%%%%%%%%%%%%%%%%%%%%%
-% Tam [°C]  Mean Daily Temperature
-% Tsm [°C]  Soil Daily Temperature
+% Tam [ï¿½C]  Mean Daily Temperature
+% Tsm [ï¿½C]  Soil Daily Temperature
 % An  [umolCO2/ s m^2]  Net Assimilation Rate
 % Rdark  % [umolCO2/ s m^2]  Leaf Maintenace Respiration / Dark Respiration
 % Om [] Daily Water Content in the Root Zone
@@ -78,7 +78,7 @@ end
 %%%%%%%%%%%%%% Maintenance and Growth Respiration
 GPP = 1.0368*(An + Rdark); %% [gC / m^2 d]  Gross Primary Productivty  --> A
 % gR growth respiration  [] -- [Rg/(GPP-Rm)]
-% r respiration rate at 10° [gC/gN d ]
+% r respiration rate at 10ï¿½ [gC/gN d ]
 % Ns [gC/gN] Sapwood
 % Nr  [gC/gN] Fine root
 %%%%Ref--  Sitch 2003 Ivanov 2008 Ruimy 1996 Ryan 1991

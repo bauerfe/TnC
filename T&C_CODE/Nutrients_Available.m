@@ -106,6 +106,9 @@ Kavail(Kavail<0)=0;
 n4=90; %% 90 days 
 FNC = FNCtm1*(n4-1)/n4 + (1-(rNc<0.66))/n4;  %% [-] Nitrogen Stress Factor
 m= 0.5; % smoothing factor 
+% %! This is to demonstrate that for too high `rNc`, it is via `e_relN` that numerical instabilities aries
+% rNc_lim = min(2.0, rNc);
+% e_relN = m*(rNc_lim-1)+1; %% Photosynthesis N efficiency 
 e_relN = m*(rNc-1)+1; %% Photosynthesis N efficiency 
 rNcR = min(1.85,m*(rNc-1)+1); %%% Factor to increase respiration due to change in N-content 
 if e_relN > 100 && OPT_SoilBiogeochemistry == 1
