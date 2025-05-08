@@ -27,7 +27,7 @@ load([root_dir filesep 'data' filesep 'Inputs' filesep 'Meteo_Rothamsted_spinup.
 % x1=1;
 % x2=105192;% 276096;
 dateNum1 = datenum(1976, 1, 1, 0, 0, 0);
-dateNum2 = datenum(1982, 12, 31, 23, 0, 0);
+dateNum2 = datenum(2000, 12, 31, 23, 0, 0);
 index1 = find(Date >= dateNum1, 1, 'first');
 index2 = find(Date >= dateNum2, 1, 'first');
 x1=index1;
