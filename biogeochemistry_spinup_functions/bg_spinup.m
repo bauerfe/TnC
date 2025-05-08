@@ -2,7 +2,8 @@
 function [B, R_litter, R_litter_sur, R_microbe, R_bacteria, R_ew, VOL, BfixN, Min_N, Min_P, RmycAM, RmycEM, ...
     N2flx, NH4_Uptake, NO3_Uptake, P_Uptake, K_Uptake, LEAK_NH4, LEAK_NO3, LEAK_P, LEAK_K, LEAK_DOC, ...
     LEAK_DON, LEAK_DOP, Lk] = biogeochemistry_spinup(Lat, Lon, N_epochs, Nyears_epoch, ISOIL, Zbio, rsd, ...
-    Pcla, Psan, PH, Zs, Ts, Ta, Psi_s, Se, Se_fc, V, VT, T_L, T_H, Lk, RexmyI, Ccrown, B, rtol, save_path)
+    Pcla, Psan, PH, Zs, Ts, Ta, Psi_s, Se, Se_fc, V, VT, T_L, T_H, Lk, RexmyI, Ccrown, B, rtol, atol, save_path, ...
+    fertilizer_ref_date, crop_data, manure_data_path, OPT_Use_Fertilizer)
     
     ZBIOG = 0.001 * Zbio; %%[m] %! Biogeochemically active layer depth in m?
     rsd = mean(rsd); %% density dry soil [kg/m^3]
@@ -21,12 +22,12 @@ function [B, R_litter, R_litter_sur, R_microbe, R_bacteria, R_ew, VOL, BfixN, Mi
     Btm1(1)=121; %%% B1 Above-ground Litter Metabolic
     Btm1(2)=315; %%% B2 Above-ground Litter Structural - Cellulose/Hemicellulose
     Btm1(3)=51.5; %%% B3 Above-ground Litter Structura - Lignin
-    Btm1(4)=3015; %%% B4 Above-ground Woody  - Cellulose/Hemicellulose
-    Btm1(5)=1005; %%% B5 Above-ground Woody - Lignin
+    Btm1(4)=0;  % 3015; %%% B4 Above-ground Woody  - Cellulose/Hemicellulose
+    Btm1(5)=0; %%% B5 Above-ground Woody - Lignin
     Btm1(6)=47.1; %%% B6 Below-ground Litter Metabolic
     Btm1(7)=381.8; %%% B7 Below-ground Litter Structural - Cellulose/Hemicellulose
     Btm1(8)=95.0; %%% B8 Below-ground Litter Structura - Lignin
-    Btm1(9)= 3077; %%% B9  SOM-POC- lignin
+    Btm1(9)= 500;  % 3077; %%% B9  SOM-POC- lignin
     Btm1(10) = 1144; %%% B10 SOM-POC -Cellulose/Hemicellulose
     Btm1(11) = 8631; %%% B11 SOM-MOC 
     Btm1(12) = 10.21; %%%B12 DOC - for bacteria 
@@ -43,7 +44,7 @@ function [B, R_litter, R_litter_sur, R_microbe, R_bacteria, R_ew, VOL, BfixN, Mi
     %%
     %%%%%% NITROGEN POOL
     Btm1(23) = 4.83; %%% B23 Nitrogen Above-ground Litter
-    Btm1(24) = 20.8;%%% B24 Nitrogen Above-ground Woody
+    Btm1(24) = 0; % 20.8;%%% B24 Nitrogen Above-ground Woody
     Btm1(25) = 4.13; %%% B25 Nitrogen Below-ground Litter
     Btm1(26) = 936.7; %%% B26 Nitrogen SOM
     Btm1(27) = 6.35;%%% B27 Nitrogen Bacteria 
@@ -56,7 +57,7 @@ function [B, R_litter, R_litter_sur, R_microbe, R_bacteria, R_ew, VOL, BfixN, Mi
     Btm1(34) = 0.098; %%% B34 Earthworms - N 
     %%%%%% PHOSPHORUS POOL
     Btm1(35) = 0.345; %%% B35 phosphorus Above-ground Litter
-    Btm1(36) = 1.487; %%% B36 phosphorus Above-ground Woody
+    Btm1(36) = 0; % 1.487; %%% B36 phosphorus Above-ground Woody
     Btm1(37) = 0.295; %%% B37 phosphorus Below-ground Litter
     Btm1(38) = 168.8; %%% B38 phosphorus SOM
     Btm1(39) = 2.05;%%%%%% B39 phosphorus Bacteria 
@@ -70,7 +71,7 @@ function [B, R_litter, R_litter_sur, R_microbe, R_bacteria, R_ew, VOL, BfixN, Mi
     Btm1(47) = 0.0001; %%%% B47 DOP
     %%%%%% POTASSIUM POOL
     Btm1(48) = 2.41;%%%% B48 Potassium Above-ground Litter
-    Btm1(49) = 10.41; %%% B36 Potassium  Above-ground Woody
+    Btm1(49) = 0; % 10.41; %%% B36 Potassium  Above-ground Woody
     Btm1(50) = 0.637;%%%% B50 Potassium  Below-ground Litter
     Btm1(51) = 11.77; %%%% B51 Potassium SOM
     Btm1(52) = 0.1168; %%%% B52 Potassium  Mineral  solution
@@ -92,20 +93,40 @@ function [B, R_litter, R_litter_sur, R_microbe, R_bacteria, R_ew, VOL, BfixN, Mi
     [B_IO]=Biogeochemistry_IO(Zs*1000,Lat,Lon,Upl);
     ExEM = 0; 
     B_IO.SC_par= [1 1 1 1]; %%% (Maint Bact , Maint Fungi,  EP, Macrofuanal)
-    jDay=1; 
-    FertN=B_IO.FertN(jDay);
+
+    if OPT_Use_Fertilizer
+        disp("Including fertilizer in BG-spinup")
+        B_IO = load_fertilizer(B_IO, fertilizer_ref_date, 365, crop_data, manure_data_path, true);
+    end
+
+    FertN=mean(B_IO.FertN);
     DepN=B_IO.DepN;
-    FertP=B_IO.FertP(jDay);
+    FertP=mean(B_IO.FertP);
     DepP=B_IO.DepP; 
-    FertK=B_IO.FertK(jDay); 
+    FertK=mean(B_IO.FertK); 
     DepK=B_IO.DepK; 
     Tup_P=B_IO.Tup_P; 
     Tup_K=B_IO.Tup_K; 
-    SC_par=B_IO.SC_par;
+    SC_par = B_IO.SC_par; 
+
+    % Manure
+    N_Man =B_IO.N_Man; %% Manure  [gC/gN]
+    P_Man =B_IO.P_Man; % Manure  [gC/gP]
+    K_Man =B_IO.K_Man;% Manure  [gC/gK]
+
+    Lig_fr_Man =B_IO.Lig_fr_Man; %% Lignin fraction in Manure  [g Lignin / g DM] 
+    frac_to_metabolic_Man = 0.85 - 0.018*(N_Man*2*Lig_fr_Man); 
+    frac_to_metabolic_Man(frac_to_metabolic_Man<0)=0;
+    ManF = mean(B_IO.ManF);  %%% [gC /m2 day] 
+    IMAN(1)= frac_to_metabolic_Man*(ManF) ; %% met_sur_lit  [gC/m^2 d]
+    IMAN(2)= (1-frac_to_metabolic_Man)*(ManF)*Lig_fr_Man ;%%  str_sur_lit_lig [gC/m^2 d]
+    IMAN(3)=  (1-frac_to_metabolic_Man)*(ManF)*(1-Lig_fr_Man);  %% str_sur_lit_nlig [gC/m^2 d]
+    IMAN(4)=  ManF./N_Man; % [gN/m^2 day]  
+    IMAN(5)=  ManF./P_Man; % [gP/m^2 day]
+    IMAN(6)=  ManF./K_Man; % [gK/m^2 day]
+
     opt_cons_CUE=1;
     [BiogeoPar]=Biogeochemistry_Parameter(opt_cons_CUE);
-    
-    IMAN=zeros(6,1);
     
     Ndays_epoch = 365 * Nyears_epoch;
     t=1:Ndays_epoch;
@@ -147,6 +168,7 @@ function [B, R_litter, R_litter_sur, R_microbe, R_bacteria, R_ew, VOL, BfixN, Mi
             [BfixN(j)]= Biogeo_Bio_fixation(0,0,Btm1,RexmyI,Ts);
             %
             %%%
+
             [dB,R_litter(j),R_microbe(j),R_litter_sur(j),R_ew(j),VOL(j),N2flx(j),Min_N(j),Min_P(j),R_bacteria(j),RmycAM(j),RmycEM(j)]= BIOGEOCHEMISTRY_DYNAMIC3(t(j),Btm1,ZBIOG,rsd,IS,Ts,Ta,Psi_s,PH,Se,Se_fc,FertN,DepN,BfixN(j),FertP,DepP,FertK,DepK,...
                 NH4_Uptake(j),NO3_Uptake(j),P_Uptake(j),K_Uptake(j),LEAK_DOC(j),LEAK_NH4(j),LEAK_NO3(j),LEAK_P(j),LEAK_K(j),LEAK_DON(j),LEAK_DOP(j),Tup_P,Tup_K,ExEM,Pcla,Psan,BiogeoPar,SC_par,IMAN,opt_cons_CUE); 
         
@@ -168,16 +190,23 @@ function [B, R_litter, R_litter_sur, R_microbe, R_bacteria, R_ew, VOL, BfixN, Mi
 
         % Compare how many values of B have changed by a certain relative amount during the epoch
         B(B<1e-10) = 1e-10;
-        rel_diff_B = abs((B(end,:) - B(1, :)) ./ B(end, :));
-        n_ss = sum(rel_diff_B < rtol);
+        diff_B = abs((B(end,:) - B(1, :)));
+        rel_diff_B = diff_B ./ B(end, :);
+        n_ss = sum((rel_diff_B < rtol) | (diff_B < atol));
+        disp([ 'Spin-up epoch ' num2str(nn) ': ' num2str(n_ss) ' of 55 elements in steady state.'])
+
         if n_ss == 55
             disp("Spin-up complete")
             break
         end
-
-        disp([ 'Spin-up epoch ' num2str(nn) ': ' num2str(n_ss) ' of 55 elements in steady state.'])
-        
     end
+
+    %! To load data across full spinup do the following
+    % B_full = zeros(Ndays_epoch * nn, 55);
+    % for i=1:nn
+    %     bg_curr=load([save_path filesep sprintf('%04d', i) '.mat']);
+    %     B_full(1+(i-1)*Ndays_epoch : i*Ndays_epoch, :) = bg_curr.B;
+    % end
     
     
     
