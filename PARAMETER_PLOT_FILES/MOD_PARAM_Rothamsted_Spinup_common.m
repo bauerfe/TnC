@@ -60,7 +60,9 @@ Cbare = 1.0; Ccrown = [0.0];
 %%%%%%%%%% SOIL INPUT %%% Flinty clay loam (Batcombe series)
 Pcla= 0.25; 
 Psan= 0.25;
-Porg= 0.06;  %! From Gregory et al., 2010: Deformation and Shrinkage Effects on the Soil Water Release Characteristic (https://acsess.onlinelibrary.wiley.com/doi/10.2136/sssaj2009.0278)
+%! In Gregory et al., 2010: Deformation and Shrinkage Effects on the Soil Water Release Characteristic (https://acsess.onlinelibrary.wiley.com/doi/10.2136/sssaj2009.0278), Porg is around 6%. Comparing with historical SOC data
+% a reasonable guess for Porg in 1968 is 4.75%.
+Porg= 0.0475;  
 Color_Class = 0;  
 %%%%%%%%%%%%%%%%%%%
 [Osat,L,Pe,Ks,O33,rsd,lan_dry,lan_s,cv_s,K_usle]=Soil_parameters(Psan,Pcla,Porg);
@@ -310,7 +312,7 @@ fbe_L = 0.0; %% fraction below-ground sapwood and reserve % From Buckley et al.,
 %SOWING AND HARVEST SECTION
 %%%%%%%%%%%%%%%% Sowing and harvesting data
 relevant_section = 1;  %! Section 1: Continuous wheat
-relevant_strip = 21;  %! Strip 3: No fertilizer, 21 (=2.1): Most fertilizer (FYM + N), highest yield
+relevant_strip = 7;  %! Strip 3: No fertilizer, 21 (=2.1): Most fertilizer (FYM + N), highest yield
 crop_data = readtable([root_dir filesep 'data' filesep 'Rothamsted_yield_data.csv']);
 crop_data = crop_data((crop_data.section == relevant_section) & (crop_data.strip == relevant_strip), :);
 
