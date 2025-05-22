@@ -1,5 +1,5 @@
 function[B_IO] = load_fertilizer(B_IO, datenum_start, num_days, crop_data, manure_data_path, OPT_Use_Fertilizer)
-    if nargin == 4
+    if nargin == 5
         % Assume that fertilizer to be used by default
         OPT_Use_Fertilizer = true;
     end
@@ -9,6 +9,8 @@ function[B_IO] = load_fertilizer(B_IO, datenum_start, num_days, crop_data, manur
         'VariableNames', {'Nrate', 'Prate', 'Krate', 'ManF'});
     
     if OPT_Use_Fertilizer
+        %%%%% N Fertilizer
+        
         % Select only entries where N is applied
         Nindices = ~isnat(crop_data.spring2_n_date);
         Ndates = crop_data.spring2_n_date(Nindices);
@@ -19,6 +21,36 @@ function[B_IO] = load_fertilizer(B_IO, datenum_start, num_days, crop_data, manur
             % Make sure the date is in simulated time range
             if ~isempty(fert_dates(date_curr,:))
                 fert_dates(date_curr,'Nrate') = {Nrates(i)};
+            end
+        end
+    
+        %%%%% P Fertilizer
+        
+        % Select only entries where P is applied
+        Pindices = ~isnat(crop_data.p_date);
+        Pdates = crop_data.p_date(Pindices);
+        Prates = crop_data.p_amount(Pindices) * 0.1; % 1 kg/ha = 0.1 g/m2
+    
+        for i=1:length(Pdates)
+            date_curr = Pdates(i);
+            % Make sure the date is in simulated time range
+            if ~isempty(fert_dates(date_curr,:))
+                fert_dates(date_curr,'Prate') = {Prates(i)};
+            end
+        end
+    
+        %%%%% K Fertilizer
+        
+        % Select only entries where K is applied
+        Kindices = ~isnat(crop_data.k_date);
+        Kdates = crop_data.k_date(Kindices);
+        Krates = crop_data.k_amount(Kindices) * 0.1; % 1 kg/ha = 0.1 g/m2
+    
+        for i=1:length(Kdates)
+            date_curr = Kdates(i);
+            % Make sure the date is in simulated time range
+            if ~isempty(fert_dates(date_curr,:))
+                fert_dates(date_curr,'Krate') = {Krates(i)};
             end
         end
     
