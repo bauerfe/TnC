@@ -12,7 +12,8 @@ A few changes have been implemented to match needs of the project conducted with
 ### Vegetation
 * Define through `Mpar.NPK_res_ini` to which values vegetation state variables
 `Nreserve`, `Preserve`, and `Kreserve` are set at sowing. This change has been
-taken over from the version "T&C,v1.5", released August 2024 by Jordi Buckley on zenodo: https://explore.openaire.eu/search/dataset?pid=10.5281%2Fzenodo.13343701
+taken over from the version "T&C,v1.5", released August 2024 by Jordi Buckley on zenodo: https://explore.openaire.eu/search/dataset?pid=10.5281%2Fzenodo.13343701 . Different to that version, the value is optional. Leaving it empty (`[]`)
+results in the default behavior of the original version.
 
 ### Other
 * Include function definition `DynamicSLA` from "T&C,v1.5", released August 2024 by Jordi Buckley on zenodo: https://explore.openaire.eu/search/dataset?pid=10.5281%2Fzenodo.13343701
