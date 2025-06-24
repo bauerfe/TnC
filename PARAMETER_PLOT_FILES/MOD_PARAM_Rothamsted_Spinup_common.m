@@ -312,7 +312,7 @@ fbe_L = 0.0; %% fraction below-ground sapwood and reserve % From Buckley et al.,
 %SOWING AND HARVEST SECTION
 %%%%%%%%%%%%%%%% Sowing and harvesting data
 relevant_section = 1;  %! Section 1: Continuous wheat
-relevant_strip = 7;  %! Strip 3: No fertilizer, 21 (=2.1): Most fertilizer (FYM + N), highest yield
+relevant_strip = 21;  %! Strip 3: No fertilizer, 21 (=2.1): Most fertilizer (FYM + N), highest yield
 crop_data = readtable([root_dir filesep 'data' filesep 'Rothamsted_yield_data.csv']);
 crop_data = crop_data((crop_data.section == relevant_section) & (crop_data.strip == relevant_strip), :);
 

@@ -208,8 +208,10 @@ function [B, R_litter, R_litter_sur, R_microbe, R_bacteria, R_ew, VOL, BfixN, Mi
     %     B_full(1+(i-1)*Ndays_epoch : i*Ndays_epoch, :) = bg_curr.B;
     % end
     
-    
-    
+    % Export variables needed later
+    B_end = B(end, :);
+    bg_save_path_final = [save_path filesep 'final.mat'];
+    save(bg_save_path_final, "B_end");
     
     %%%%%%%% SOIL BIOGEOCHEMISTRY BALANCE CHECK
     IS=IS*Ndays_epoch;
