@@ -14,6 +14,7 @@ A few changes have been implemented to match needs of the project conducted with
 `Nreserve`, `Preserve`, and `Kreserve` are set at sowing. This change has been
 taken over from the version "T&C,v1.5", released August 2024 by Jordi Buckley on zenodo: https://explore.openaire.eu/search/dataset?pid=10.5281%2Fzenodo.13343701
 
+* New option `OPT_IgnoreNutrientConcentrationBounds`. If set `true` (default `false`), no error will be raised in the function `Nutrients_Available` if vegetation nutrient concentrations (`rNc`, `rPc`, and `rKc`) are out of bounds, which is possible in particular for crops.
 ### Other
 * Include function definition `DynamicSLA` from "T&C,v1.5", released August 2024 by Jordi Buckley on zenodo: https://explore.openaire.eu/search/dataset?pid=10.5281%2Fzenodo.13343701
 Original

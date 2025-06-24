@@ -1,6 +1,8 @@
 Changes
 =======
 
+* New option `OPT_IgnoreNutrientConcentrationBounds`. If set `true` (default `false`), no error will be raised in the function `Nutrients_Available` if vegetation nutrient concentrations (`rNc`, `rPc`, and `rKc`) are out of bounds, which is possible in particular for crops.
+
 * Use platform-agnostic file separators in filepaths for improved
 compatibility across platforms.
 
