@@ -26,6 +26,9 @@ soCrop_L = [0.1]; %
 ff_r_L= [0.4]; % fraction allocated to fruit - to the grain pool 5 (try with 0.5 as well, as is defined further down in Buckley code)
 
 
+%! Ignore bounds on nutrient reserves `rNc`, `rPc`, `rKc` in `Nutrients_Available`
+OPT_IgnoreNutrientConcentrationBounds = 1;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% SOIL AND HYDROLOGICAL PARAMETER
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -311,8 +314,8 @@ fbe_L = 0.0; %% fraction below-ground sapwood and reserve % From Buckley et al.,
 %%%%%%%%%%%%%%%
 %SOWING AND HARVEST SECTION
 %%%%%%%%%%%%%%%% Sowing and harvesting data
+%! Relevant strip defined outside of this script
 relevant_section = 1;  %! Section 1: Continuous wheat
-relevant_strip = 21;  %! Strip 3: No fertilizer, 21 (=2.1): Most fertilizer (FYM + N), highest yield
 crop_data = readtable([root_dir filesep 'data' filesep 'Rothamsted_yield_data.csv']);
 crop_data = crop_data((crop_data.section == relevant_section) & (crop_data.strip == relevant_strip), :);
 

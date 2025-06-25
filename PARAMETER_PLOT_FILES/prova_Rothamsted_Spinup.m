@@ -7,10 +7,6 @@
 %%%%%%%% INPUT MANAGER 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%
-% NN=105192;% 276096;% %%% time Step (hours)
-OPT_BG = 0;
-%! Ignore bounds on nutrient reserves `rNc`, `rPc`, `rKc` in `Nutrients_Available`
-OPT_IgnoreNutrientConcentrationBounds = 1;
 %%%%%%%%% Time step 
 dt=3600; %%[s] %%% 
 dth=1; %%[h]
