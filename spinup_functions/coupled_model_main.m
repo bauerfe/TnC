@@ -43,7 +43,14 @@ function reached_equilibrium = is_difference_inside_tol(prev_data, new_data, rto
         prev_val = getfield(prev_data, varname);
         new_val = getfield(new_data, varname);
         diff = abs(new_val - prev_val);
-        if any( (diff > atol) & (diff > rtol * new_val) )
+        % if any( (diff > atol) & (diff > rtol * new_val) )
+        % For rtol take mean abs. diff, for atol take max value,
+        % i.e. mean absolute error hass to be below rtol, and max error below atol
+        % Still use `any` for 3D-arrays
+        eps = 1e-10;
+        prev_val(abs(prev_val) < eps) = eps;
+        mean_rel_diff = mean(diff / prev_val);
+        if any(diff > atol) | any(mean_rel_diff > rtol)
             reached_equilibrium = false;
             break
         end
