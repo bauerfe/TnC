@@ -10,7 +10,7 @@
 run(initial_parameters_path);
 
 %! Don't ignore bounds on nutrient reserves `rNc`, `rPc`, `rKc` in `Nutrients_Available`
-OPT_IgnoreNutrientConcentrationBounds = 0;
+OPT_IgnoreNutrientConcentrationBounds = 1;
 
 % Mpar_L(1).NPK_res_ini = [35 5 15];  % [0 0 0];
 Mpar_L(1).NPK_res_ini = [0 0 0];  % [0 0 0]; Don't provide initial NPK reserve
