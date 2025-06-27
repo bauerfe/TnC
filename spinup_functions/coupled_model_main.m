@@ -1,5 +1,5 @@
 function [path_curr reached_equilibrium] = coupled_model_main(relevant_strip, descriptor_full, ...
-    root_dir, output_dir, N_max_epochs, rtol, atol, compare_vars, prev_data_path, prev_bg_path, ...
+    root_dir, output_dir, N_max_epochs, atol, rtol, compare_vars, prev_data_path, prev_bg_path, ...
     prova_file_path, initial_parameters_path, bg_parameters_path)
 
     prev_data = load(prev_data_path);
@@ -21,7 +21,7 @@ function [path_curr reached_equilibrium] = coupled_model_main(relevant_strip, de
         new_data = load(path_curr);
 
         % Test whether equilibrium has been reached
-        reached_equilibrium = is_difference_inside_tol(prev_data, new_data, rtol, atol, compare_vars);
+        reached_equilibrium = is_difference_inside_tol(prev_data, new_data, atol, rtol, compare_vars);
         if reached_equilibrium
             disp('    Reached dynamic equilibrium.')
             break;
@@ -36,21 +36,20 @@ function [path_curr reached_equilibrium] = coupled_model_main(relevant_strip, de
     end
 end
 
-function reached_equilibrium = is_difference_inside_tol(prev_data, new_data, rtol, atol, compare_vars)
+function reached_equilibrium = is_difference_inside_tol(prev_data, new_data, atol, rtol, compare_vars)
     reached_equilibrium = true;
     
     for varname=compare_vars
         prev_val = getfield(prev_data, varname);
         new_val = getfield(new_data, varname);
-        diff = abs(new_val - prev_val);
-        % if any( (diff > atol) & (diff > rtol * new_val) )
-        % For rtol take mean abs. diff, for atol take max value,
-        % i.e. mean absolute error hass to be below rtol, and max error below atol
-        % Still use `any` for 3D-arrays
-        eps = 1e-10;
-        prev_val(abs(prev_val) < eps) = eps;
-        mean_rel_diff = mean(diff / prev_val);
-        if any(diff > atol) | any(mean_rel_diff > rtol)
+        % % Where `prev_val` is greater than `atol`, take a relative difference
+        % % and compare to `rtol`. Otherwise compare absolute difference to `atol`
+        % small_vals = abs(prev_val) < atol;
+        % abs_diff = abs(new_val - prev_val);
+        % relative_diff = abs_diff(~small_vals) ./ abs(prev_val(~small_vals));
+        % if any(relative_diff > rtol) | any(abs_diff(small_vals) > atol)
+        rmse = sqrt( mean ((prev_val - new_val).^2) );
+        if any(rmse > rtol * std(prev_val) + atol)  % Use `any` for arrays with >= 3 dim
             reached_equilibrium = false;
             break
         end
