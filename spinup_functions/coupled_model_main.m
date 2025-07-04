@@ -1,4 +1,4 @@
-function [path_curr reached_equilibrium] = coupled_model_main(relevant_strip, descriptor_full, ...
+function [path_curr, reached_equilibrium] = coupled_model_main(relevant_strip, descriptor_full, ...
     root_dir, output_dir, N_max_epochs, atol, rtol, compare_vars, prev_data_path, prev_bg_path, ...
     prova_file_path, initial_parameters_path, bg_parameters_path)
 
@@ -12,7 +12,7 @@ function [path_curr reached_equilibrium] = coupled_model_main(relevant_strip, de
     reached_equilibrium = false;
     
     for epoch=1:N_max_epochs
-        disp(sprintf('Epoch %02d of %d', epoch, N_max_epochs))
+        fprintf('Epoch %02d of %d', epoch, N_max_epochs)
         
         % Actual spinup
         [path_curr] = coupled_model_spinup(relevant_strip, descriptor_full, prev_data, prev_bg, ...
@@ -32,7 +32,7 @@ function [path_curr reached_equilibrium] = coupled_model_main(relevant_strip, de
     end
 
     if ~reached_equilibrium
-        disp(sprintf('After %d epochs, dynamic equilibrium was not reached', epoch))
+        fprintf('After %d epochs, dynamic equilibrium was not reached', epoch)
     end
 end
 
