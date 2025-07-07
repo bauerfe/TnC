@@ -10,24 +10,25 @@ else
     BRoot=B(cc,3);
 end
 %Crop_type=Mpar.Crop_type;
-MHcrop =  Veg_Param_Dyn.MHcrop(cc);
+MHcrop =  Veg_Param_Dyn.MHcrop(cc);  %! Max. crop height
 %%% INPUT
 LAI = LAI + LAIdead/3;
 LAI_max=6.5;
 %%% CLM5.0 / AgroIBIS
-if LAI/(LAI_max-1)  < 1.0
+if LAI/(LAI_max-1)  < 1.0 %! i.e. LAI < LAI_max - 1
+    %! Crop height grows with LAI^2
     hc =  MHcrop*(LAI/(LAI_max-1))^2;
 else
     hc = MHcrop;
     %%%%%%
 end
-hc(hc<0.05)=0.05;
+hc(hc<0.05)=0.05; %! Crop height always at least 5 cm
 SAI=max(0.15*LAI,0.001);
 %%%%%%%%%%%%%%%%%
-AgrHarNut=[0 0 0];
-if  ManI(cc)>0 %% Sowing
-
-    Ccrown(cc)=Mpar(cc).Crop_crown(ManI(cc));
+AgrHarNut=[0 0 0]; %! This holds nutrient reserves directly before harvest
+if  ManI(cc)>0 %% Sowing %! (management indicator, comes from Crop_Planting_Harvest)
+    
+    Ccrown(cc)=Mpar(cc).Crop_crown(ManI(cc)); %! Instantiated with `ones` of length sowing dates - is it changed anywhere?
 
     if Ccrown(cc)==0
         if numel(size(B)) == 3

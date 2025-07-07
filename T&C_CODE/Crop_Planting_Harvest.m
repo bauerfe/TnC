@@ -1,7 +1,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   Subfunction  CROP HARVESTING or PLANTING   %%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function[B,RB,LAI,LAIdead,ManI,PHE_S,dflo,AgeL,AgeDL]= Crop_Planting_Harvest(B,RBtm1,dtd,LAI,LAIdead,PHE_S,dflo,AgeL,AgeDL,Datam,Mpar)
+function[B,Nreserve,Preserve,Kreserve,RB,LAI,LAIdead,ManI,PHE_S,dflo,AgeL,AgeDL] ...
+    = Crop_Planting_Harvest(B,Nreserve,Preserve,Kreserve,RBtm1,dtd,LAI,LAIdead,PHE_S,dflo,AgeL,AgeDL,Datam,Mpar)
 %%%%%%
 DD = datenum(Datam(1),Datam(2),Datam(3),Datam(4),0,0);
 Date_sowing=Mpar.Date_sowing+10; %%% Emergence as Date of sowing + 10 days  
@@ -12,7 +13,7 @@ Crop_B= Mpar.Crop_B;
 ManI=0; %%% Management Indicator Planting (1 to Inf) or Harvesting (-2) or OneDay after Harvesting (-3) 
 Btm1=B;
 %%%%%%%%%% Planting
-if  sum(abs(DD-Date_sowing)<=0.49)>=1
+if  sum(abs(DD-Date_sowing)<=0.49)>=1  %! At least one sowing date is at most 0.49 days away from DD
     ManI=find(abs(DD-Date_sowing)<=0.49); %%% identify which sowing season 
     %%%%%
     B(3) = Crop_B(1);
@@ -20,6 +21,11 @@ if  sum(abs(DD-Date_sowing)<=0.49)>=1
     %%%%
     B(B<0)=0;
     %%%%
+    if length(Mpar.NPK_res_ini) == 3 %! Only change `Xreserve` to fixed value if defined
+        Nreserve = Mpar.NPK_res_ini(1);
+        Preserve = Mpar.NPK_res_ini(2);
+        Kreserve = Mpar.NPK_res_ini(3);
+    end
 end
 %%%%%%%%%% Harvesting
 if  sum(abs(DD-Date_harvesting)<=0.49)>=1
@@ -37,6 +43,7 @@ if  sum(abs(DD-(Date_harvesting+1))<=0.49)>=1
 end
 %%%%%%%%%%%
 %if ManI~=0
+%! Removed / harvested biomass (dtd = 1)
 if (sum(find(abs(DD-Date_sowing)<=0.49))>0) ||  (ManI == -2) %% planting or harvest 
     RB(1)=(Btm1(1)-B(1))/dtd; %%  [gC/ m^2 day] %%% Leaves - Grass
     RB(2)=(Btm1(2)-B(2))/dtd; %%  [gC/ m^2 day] %%% Sapwood
@@ -50,6 +57,7 @@ else
     RB(1:7)=0; %%
 end
 %%%% If crop still not out - re-initialize phenology 
+%! dflo: Day from leaf onset
 if (dflo==2) && (LAI==0) 
     PHE_S=1; dflo= 0; AgeL= 0; AgeDL=0; 
 end 

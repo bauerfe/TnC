@@ -6,7 +6,7 @@ function[LAI,B,NPP,ANPP,Rg,RA,Rms,Rmr,Rmc,PHE_S,dflo,AgeL,e_rel,e_relN,LAIdead,N
     Ta,Tdp,PAR,Psi_x,Psi_l,An,Rdark,NPPtm1,jDay,Datam,NPPI,TdpI,Bfac_weekI,NupI,NavlI,PAR_I,NBL_I,NBLeaftm1,....
     Lat,Veg_Param_Dyn,cc,...
     Nreservetm1,Preservetm1,Kreservetm1,Nuptake,Puptake,Kuptake,FNCtm1,Se_bio,Tdp_bio,...
-    ParEx,EM,Bam,Bem,Mpar,TBio,OPT_EnvLimitGrowth,OPT_VCA,OPT_VD,OPT_SoilBiogeochemistry)
+    ParEx,EM,Bam,Bem,Mpar,TBio,OPT_EnvLimitGrowth,OPT_VCA,OPT_VD,OPT_SoilBiogeochemistry, OPT_IgnoreNutrientConcentrationBounds)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% INPUT dth  = 1 [h]
@@ -54,6 +54,7 @@ function[LAI,B,NPP,ANPP,Rg,RA,Rms,Rmr,Rmc,PHE_S,dflo,AgeL,e_rel,e_relN,LAIdead,N
 %%% LDay_cr %% Threshold for senescence day light [h]
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%
+%! Veg_Param_Dyn typically initialized in Restating_parameters.m
 Sl = Veg_Param_Dyn.Sl(cc);
 mSl = Veg_Param_Dyn.mSl(cc);
 Stoich = Veg_Param_Dyn.Stoich(cc) ;
@@ -155,7 +156,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 L_day = 360/(15*pi)*acos(-tan(23.45*pi/180*cos(2*pi/365*(172 - jDay)))*tan(Lat*pi/180)); %% [h] length of the day 
 %%%%%%%%%%%%%%%%%%%%%
-[FNC,e_relN,rNc,rPc,rKc,rMc,rNcR,Navailtm1,Pavailtm1,Kavailtm1]= Nutrients_Available(Btm1,FNCtm1,Stoich,Nreservetm1,Preservetm1,Kreservetm1,OPT_SoilBiogeochemistry);
+[FNC,e_relN,rNc,rPc,rKc,rMc,rNcR,Navailtm1,Pavailtm1,Kavailtm1]= Nutrients_Available(Btm1,FNCtm1,Stoich,Nreservetm1,Preservetm1,Kreservetm1,OPT_SoilBiogeochemistry, OPT_IgnoreNutrientConcentrationBounds);
 %%%%%%%%%%%%%%%%%%%%%%
 %%% Root Exudation and transfer to Mychorriza
 [Rexmy]= Root_Exudation(NPPtm1,Btm1(3),Bam,Bem,Btm1(4),rMc,rNc,rPc,rKc,ParEx,NupIm,NavlI,EM,Tdp_bio); %%% % [gC / m^2 d]
@@ -194,7 +195,8 @@ end
 [B,RB,LAI,LAIdead,ManI]= Forest_Logging_Fire(B,RB,dtd,Sl,mSl,aSE,LAI,LAIdead,Datam,Mpar);
 %%%%% Crop Management 
 if (aSE==5)
-    [B,RB,LAI,LAIdead,ManI,PHE_S,dflo,AgeL,AgeDL]= Crop_Planting_Harvest(B,RB,dtd,LAI,LAIdead,PHE_S,dflo,AgeL,AgeDL,Datam,Mpar);
+    [B,Nreserve,Preserve,Kreserve,RB,LAI,LAIdead,ManI,PHE_S,dflo,AgeL,AgeDL] ...
+    = Crop_Planting_Harvest(B,Nreserve,Preserve,Kreserve,RB,dtd,LAI,LAIdead,PHE_S,dflo,AgeL,AgeDL,Datam,Mpar);
 end
 %%%%%
 %%%%%%%%% LAI Below Minimum
