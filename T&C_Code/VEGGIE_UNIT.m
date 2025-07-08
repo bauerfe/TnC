@@ -148,6 +148,7 @@ PAR_Im(3)= PAR_I(3)*(n6-1)/n6 + (PAR_Im(1)-PAR_Im(2))/n6;
 %%%%%  Average new leaf biomass 30 days
 NBL_Im = NBL_I*(n2-1)/n2 + NBLeaftm1/n2;
 %%%%%%%
+%! See TR 17.3.7 - Environmental constraints
 if OPT_EnvLimitGrowth == 1
     [GF]= EnvConGrowth(Ta,Bfac_alloc,gcoef); %%% [gC /m2 day]
 else

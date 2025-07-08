@@ -1,6 +1,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   Subfunction  VEGETATION_DYNAMIC_RESULTS %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%! This is very similar to `VEGETATION_DYNAMICS`, except that it doesn't returns explicit values rather than `dB`
+%! and some dynamics are not moduled (e.g. stoichiometric constraints)
 %%% References [Cox 2001] Bonan et al., 2003 Krinner et al.,  2005 Ivanov
 %%% et al., 2008  Sitch et al 2003 White et al 2000  Knorr 2000  Arora and
 %%% Boer 2003
@@ -9,14 +11,14 @@ function[LAI,NPP,Rg,RA,Rms,Rmr,Rmc,ANPP,LAIdead,Sr,Slf,Sfr,Swm,Sll,NLeaf,NLeafde
     Nuptake,Puptake,Kuptake,rNcR,rNc,rPc,rKc,OPT_EnvLimitGrowth)
 %%%% INPUT
 %Sl specific leaf area of  biomass [m^2 / kg C]
-%Tam [°C]  Air daily temperature
-%Tsm [°C]  Soil Daily temperature
-% Tam [°C]  Mean Daily Temperature
-% Tsm [°C]  Soil Daily Temperature
+%Tam [ï¿½C]  Air daily temperature
+%Tsm [ï¿½C]  Soil Daily temperature
+% Tam [ï¿½C]  Mean Daily Temperature
+% Tsm [ï¿½C]  Soil Daily Temperature
 % An  [umolCO2/ s m^2]  Net Assimilation Rate
 % Rdark  % [umolCO2/ s m^2]  Leaf Maintenace Respiration / Dark Respiration
 % gR growth respiration  [] -- [Rg/(GPP-Rm)]
-% r respiration rate at 10° [gC/gN d ]
+% r respiration rate at 10ï¿½ [gC/gN d ]
 % Ns [gC/gN] Sapwood
 % Nr  [gC/gN] Fine root
 %%%%%%% CARBON POOL %%%%%%%%%%%

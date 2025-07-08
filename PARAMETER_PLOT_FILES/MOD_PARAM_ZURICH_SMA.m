@@ -362,6 +362,7 @@ SND(1)=0;
 Ts(1)=Ta(1)+2;
 Tdamp(1)=2; 
 Tdp(1,:)= 2*ones(1,ms);
+Sdp(1,:)= (0.001*dz).*cv_s.*(Tdp(1,:)); %% [J °C/m^2 K]
 TdpI_H(1,:)=2;
 TdpI_L(1,:)=2;
 %%% Snow_alb = soil_alb initial 

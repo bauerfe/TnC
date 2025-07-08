@@ -229,6 +229,7 @@ Tdeb =zeros(NN,max(1,length(Zs_deb)-1));
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Check_Land_Cover_Fractions(Crock,Curb,Cwat,Cbare,Ccrown);
 CcrownFIX = Ccrown;
+Ccrown_prev = Ccrown;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% Lateral Contribution
 q_runon=zeros(NN,1); %%[mm/h]
@@ -307,8 +308,8 @@ for i=2:NN
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         if OPT_SoilBiogeochemistry == 1
-            IS= Ccrown*squeeze(ISOIL_L(j-1,:,:)) + Ccrown*squeeze(ISOIL_H(j-1,:,:));
-            REXMY= Ccrown*squeeze(Rexmy_L(j-1,:,:)) + Ccrown*squeeze(Rexmy_H(j-1,:,:));
+            IS= Ccrown_prev*squeeze(ISOIL_L(j-1,:,:)) + Ccrown_prev*squeeze(ISOIL_H(j-1,:,:));
+            REXMY= Ccrown_prev*squeeze(Rexmy_L(j-1,:,:)) + Ccrown_prev*squeeze(Rexmy_H(j-1,:,:));
             FireA = 1*((sum(ManIH==-5) + sum(ManIL==-5)) > 0);
             [P(j,:),LEAK_NH4(j),LEAK_NO3(j),LEAK_P(j),LEAK_K(j),LEAK_DOC(j),LEAK_DON(j),LEAK_DOP(j),...
                 R_NH4(j),R_NO3(j),R_P(j),R_K(j),R_DOC(j),R_DON(j),R_DOP(j),...
@@ -318,7 +319,9 @@ for i=2:NN
                 Ccrown,Bio_Zs,RfH_Zs,RfL_Zs,sum(Lk(pdind)),sum(Rd(pdind)),sum(Rh(pdind)),sum(Pr(pdind)),sum(T_H(pdind,:),1),sum(T_L(pdind,:),1),B_H(j-1,:,3),B_L(j-1,:,3),LAI_H(j-1,:),LAI_L(j-1,:),...
                 SupN_H(j-1,:),SupP_H(j-1,:),SupK_H(j-1,:),SupN_L(j-1,:),SupP_L(j-1,:),SupK_L(j-1,:),...
                 REXMY,RexmyI(j-1,:),ExEM,NavlI(j-1,:),Pcla,Psan,...
-                B_IO,jDay(j),FireA,0);
+                B_IO,j,FireA,0);
+                % B_IO,datetime(Datam(i,1:3)),FireA,0);
+                % B_IO,jDay(j),FireA,0);
             %%%%%
             %%%%%
             BLit(j,:)= 0.002*sum(P(j,1:5))*Ccrown; %% %%[kg DM / m2]
@@ -369,6 +372,7 @@ for i=2:NN
                 
                 %%%%%%%%%%%%%%%%%%%%%% Change in height SAI and Ccrown
                 SAI_H(j,cc) =SAI_H(j-1,cc);
+                Ccrown_prev = Ccrown;
                 if aSE_H(cc) == 2
                     [hc_H(j,cc)] = GrassHeight(LAI_H(j,cc),LAIdead_H(j,cc));
                 elseif aSE_H(cc) == 5
@@ -428,6 +432,7 @@ for i=2:NN
                 
                 %%%%%%%%%%%%%%%%%%%%%% Change in height SAI and Ccrown
                 SAI_L(j,cc) =SAI_L(j-1,cc);
+                Ccrown_prev = Ccrown;
                 if aSE_L(cc) == 2
                     [hc_L(j,cc)] = GrassHeight(LAI_L(j,cc),LAIdead_L(j,cc));
                 elseif aSE_L(cc) == 5
